@@ -4,61 +4,72 @@
             "name": "Inauma",
             "artist": "Sauti sol",
             "img": "music-1.jpeg",
-            "src": "music-1"
+            "src": "music-1",
+            "comments": ""
         },
         {
             "name": "Brighter Days",
             "artist": "Sauti sol",
             "img": "music-2.jpg",
-            "src": "music-2"
+            "src": "music-2",
+            "comments": ""
+            
         },
         {
             "name": "Melanin",
             "artist": "Sauti sol",
             "img": "music-3.jpeg",
-            "src": "music-3"
+            "src": "music-3",
+            "comments": ""
         },
         {
             "name": "My Everything",
             "artist": "Sauti sol",
             "img": "music-4.jpg",
-            "src": "music-4"
+            "src": "music-4",
+            "comments": ""
         },
         {
             "name": "Wake Up",
             "artist": "Sauti sol",
             "img": "music-5.jpg",
-            "src": "music-5"
+            "src": "music-5",
+            "comments": ""
         },
         {
             "name": "Insecure",
             "artist": "Sauti sol",
             "img": "music-6.jpeg",
-            "src": "music-6"
+            "src": "music-6",
+            "comments": ""
         },
         {
             "name": "Lil Mama",
             "artist": "Sauti sol",
             "img": "music-7.jpg",
-            "src": "music-7"
+            "src": "music-7",
+            "comments": ""
         },
         {
             "name": "Midnight train",
             "artist": "Sauti sol",
             "img": "music-8.jpeg",
-            "src": "music-8"
+            "src": "music-8",
+            "comments": ""
         },
         {
             "name": "Rewind",
             "artist": "Sauti sol",
             "img": "music-9.jpg",
-            "src": "music-9"
+            "src": "music-9",
+            "comments": ""
         },
         {
             "name": "Rumba Japani",
             "artist": "Sauti sol",
             "img": "music-10.jpg",
-            "src": "music-10"
+            "src": "music-10",
+            "comments": ""
         }
     ]
 }
