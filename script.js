@@ -27,7 +27,7 @@ fetch('http://localhost:3000/allSongs')
         isMusicPaused = true;
         window.addEventListener("load", () => {
             loadMusic(musicIndex);
-            playingSong();
+        
         });
     });
 
@@ -119,3 +119,125 @@ mainAudio.addEventListener("timeupdate", (e) => {
     musicCurrentTime.innerText = `${currentMin}:${currentSec}`;
 });
 
+// Update playing song currentTime on according to the progress bar width
+progressArea.addEventListener("click", (e)=>{
+    let progressWidth = progressArea.clientWidth;
+    let clickedOffsetX = e.offsetX;
+    let songDuration = mainAudio.duration;
+  
+    mainAudio.currentTime = (clickedOffsetX / progressWidth) * songDuration;
+    playMusic();
+    playingSong();
+});
+
+
+moreMusicBtn.addEventListener("click", ()=>{
+    musicList.classList.toggle("show");
+});
+closemoreMusic.addEventListener("click", ()=>{
+    moreMusicBtn.click();
+});
+
+
+
+
+
+// Create music list function
+function createMusicList() {
+    const ulTag = document.querySelector("ul");
+fetch('http://localhost:3000/allSongs')
+.then(response => response.json())
+.then(data => {
+      data = allMusic
+    for (let i = 0; i < allMusic.length; i++) {
+        let liTag = `<li li-index="${i + 1}">
+                        <div class="row">
+                            <span>${allMusic[i].name}</span>
+                            <p>${allMusic[i].artist}</p>
+                        </div>
+                        <span id="${allMusic[i].src}" class="audio-duration">3:40</span>
+                        <audio class="${allMusic[i].src}" src="songs/${allMusic[i].src}.m4a"></audio>
+                    </li>`;
+        ulTag.insertAdjacentHTML("beforeend", liTag);
+        console.log(allMusic.length)
+
+        let liAudioDuartionTag = ulTag.querySelector(`#${allMusic[i].src}`);
+        let liAudioTag = ulTag.querySelector(`.${allMusic[i].src}`);
+        liAudioTag.addEventListener("loadeddata", () => {
+            let duration = liAudioTag.duration;
+            let totalMin = Math.floor(duration / 60);
+            let totalSec = Math.floor(duration % 60);
+            if (totalSec < 10) {
+                totalSec = `0${totalSec}`;
+            }
+            liAudioDuartionTag.innerText = `${totalMin}:${totalSec}`;
+            liAudioDuartionTag.setAttribute("t-duration", `${totalMin}:${totalSec}`);
+        });
+    }
+})
+}
+createMusicList()
+
+// Play particular song from the list onclick of li tag
+function playingSong(){
+    const ulTag = document.querySelector("ul");
+    const allLiTag = ulTag.querySelectorAll("li");
+  
+    for (let j = 0; j < allLiTag.length; j++) {
+        let audioTag = allLiTag[j].querySelector(".audio-duration");
+        
+        if(allLiTag[j].classList.contains("playing")){
+            allLiTag[j].classList.remove("playing");
+            let adDuration = audioTag.getAttribute("t-duration");
+            audioTag.innerText = adDuration;
+        }
+  
+        if(allLiTag[j].getAttribute("li-index") == musicIndex){
+            allLiTag[j].classList.add("playing");
+            audioTag.innerText = "Playing";
+        }
+  
+        allLiTag[j].setAttribute("onclick", "clicked(this)");
+    }
+}
+
+// Particular li clicked function
+function clicked(element){
+    let getLiIndex = element.getAttribute("li-index");
+    musicIndex = getLiIndex;
+    loadMusic(musicIndex);
+    playMusic();
+    playingSong();
+}
+
+const commentForm = document.getElementById('comment-form');
+            const commentsContainer = document.getElementById('comments');
+
+            commentForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const commentInput = document.getElementById('comment');
+                const comment = commentInput.value;
+
+                if ( comment.trim() !== '') {
+                    // Create a new comment element
+                    const newComment = document.createElement('div');
+                    newComment.classList.add('comment');
+                    newComment.id = "addedComment"
+                    newComment.innerHTML = `- ${comment} <span id="delete-btn" onclick="deleteComment(this)">X</span>`;
+
+                    // Append the new comment to the comments container
+                    commentsContainer.appendChild(newComment);
+
+                    // Clear the form inputs
+                    commentInput.value = '';
+            //         const deleteComment = document.querySelector('#delete-btn');
+            // deleteComment.addEventListener("click", (e)=> {
+            //     document.getElementById('addedComment')
+            //     e.target 
+            // })
+
+                }
+            });
+
+            

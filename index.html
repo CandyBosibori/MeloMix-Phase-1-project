@@ -50,20 +50,21 @@
             <i id="next" class="material-icons">skip_next</i>
             <i id="more-music" class="material-icons">queue_music</i>
         </div>
-
-        <div id="wave">
-            <span class="stroke"></span>
-            <span class="stroke"></span>
-            <span class="stroke"></span>
-            <span class="stroke"></span>
-            <span class="stroke"></span>
-            <span class="stroke"></span>
-            <span class="stroke"></span>
-            <span class="stroke"></span>
-            <span class="stroke"></span>
+        <div id="comment-section">
+            <h5>What did you think about this song?</h5>
+    
+            <!-- Comment Form -->
+            <form id="comment-form">
+               
+                <textarea id="comment" required placeholder="Type a reply..."></textarea>
+    
+                <button type="submit">POST</button>
+            </form>
+    
+            <!-- Comment Display Area -->
+            <div id="comments"></div>
         </div>
 
-        
         <div class="music-list">
             <div class="header">
                 <div class="row">
