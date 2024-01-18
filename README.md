@@ -73,7 +73,7 @@ every time you open the website, random song is played.
 
 ![songlist](<readmePictures/song list.jpeg>)
 
-user can add and delete a comment her or she has made on a song
+user can add and delete a comment her or she has made on a song.
 
 ![comment section](<readmePictures/comments sectionn.jpeg>)
 
