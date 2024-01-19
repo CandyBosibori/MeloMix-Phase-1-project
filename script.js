@@ -1,7 +1,5 @@
-
-
 // INTARACTIVITY :)
-//Calling the elements 
+// Calling the elements
 let now_playing = document.querySelector('.now-playing');
 const wrapper = document.querySelector(".wrapper"),
   musicImg = wrapper.querySelector(".img-area img"),
@@ -19,15 +17,20 @@ const wrapper = document.querySelector(".wrapper"),
   commentForm = document.getElementById('comment-form'),
   commentsContainer = document.getElementById('comments');
 
-// Fetching the data from the Json file
+let allMusic;
+let musicIndex = 1; // Default index
+let isMusicPaused = true;
+
+// Fetching the data from the JSON file
 fetch('http://localhost:3000/allSongs')
   .then(response => response.json())
   .then(data => {
-    allMusic = data;
+    allMusic = data.allSongs;
     musicIndex = Math.floor((Math.random() * allMusic.length) + 1);
     isMusicPaused = true;
     window.addEventListener("load", () => {
       loadMusic(musicIndex);
+      fetchComments(musicIndex);
     });
   });
 
@@ -37,6 +40,30 @@ function loadMusic(indexNumb) {
   musicArtist.innerText = allMusic[indexNumb - 1].artist
   musicImg.src = `images/${allMusic[indexNumb - 1].img}`;
   mainAudio.src = `songs/${allMusic[indexNumb - 1].src}.m4a`;
+
+  // Fetch and display comments for the current song
+  fetchComments(indexNumb);
+}
+
+// Fetch and display comments for a particular song
+function fetchComments(songIndex) {
+  commentsContainer.innerHTML = ''; // Clear existing comments
+
+  const apiUrl = `http://localhost:3000/allSongs/${songIndex}/comments`;
+
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(comments => {
+      comments.forEach(comment => {
+        const newComment = document.createElement('div');
+        newComment.classList.add('comment');
+        newComment.innerHTML = `${comment} 
+          <span class="delete-btn" onclick="deleteComment(this, ${songIndex})">Delete</span>`;
+
+        commentsContainer.appendChild(newComment);
+      });
+    })
+    .catch(error => console.error('Error fetching comments:', error));
 }
 
 // Play music function
@@ -51,24 +78,6 @@ function pauseMusic() {
   wrapper.classList.remove("paused");
   playPauseBtn.querySelector("i").innerText = "play_arrow";
   mainAudio.pause();
-}
-
-// Play previous song
-function prevMusic() {
-  musicIndex--;
-  musicIndex < 1 ? musicIndex = allMusic.length : musicIndex = musicIndex;
-  loadMusic(musicIndex);
-  playMusic();
-  playingSong();
-}
-
-// Play next song
-function nextMusic() {
-  musicIndex++;
-  musicIndex > allMusic.length ? musicIndex = 1 : musicIndex = musicIndex;
-  loadMusic(musicIndex);
-  playMusic();
-  playingSong();
 }
 
 // Play or pause button event
@@ -90,119 +99,13 @@ nextBtn.addEventListener("click", () => {
 
 // Update progress bar width according to music current time
 mainAudio.addEventListener("timeupdate", (e) => {
-  const currentTime = e.target.currentTime;
-  const duration = e.target.duration;
-  let progressWidth = (currentTime / duration) * 100;
-  progressBar.style.width = `${progressWidth}%`;
+  // ... (existing code)
 
-  // Display the total duration of the song being played
-  let musicCurrentTime = wrapper.querySelector(".current-time"),
-    musicDuartion = wrapper.querySelector(".max-duration");
-  mainAudio.addEventListener("loadeddata", () => {
-    let mainAdDuration = mainAudio.duration;
-    let totalMin = Math.floor(mainAdDuration / 60);
-    let totalSec = Math.floor(mainAdDuration % 60);
-    if (totalSec < 10) {
-      totalSec = `0${totalSec}`;
-    }
-    musicDuartion.innerText = `${totalMin}:${totalSec}`;
-  });
-
-  // Display how many minutes have been listened to so far
-  let currentMin = Math.floor(currentTime / 60);
-  let currentSec = Math.floor(currentTime % 60);
-  if (currentSec < 10) {
-    currentSec = `0${currentSec}`;
-  }
-  musicCurrentTime.innerText = `${currentMin}:${currentSec}`;
+  // Fetch and display comments for the current song
+  fetchComments(musicIndex);
 });
 
-// Update playing song currentTime on the progress bar width
-progressArea.addEventListener("click", (e) => {
-  let progressWidth = progressArea.clientWidth;
-  let clickedOffsetX = e.offsetX;
-  let songDuration = mainAudio.duration;
-
-  mainAudio.currentTime = (clickedOffsetX / progressWidth) * songDuration;
-  playMusic();
-  playingSong();
-});
-
-moreMusicBtn.addEventListener("click", () => {
-  musicList.classList.toggle("show");
-});
-
-closemoreMusic.addEventListener("click", () => {
-  moreMusicBtn.click();
-});
-
-// Create music list function
-function createMusicList() {
-  const ulTag = document.querySelector("ul");
-  fetch('http://localhost:3000/allSongs')
-    .then(response => response.json())
-    .then(data => {
-      data = allMusic;
-      for (let i = 0; i < allMusic.length; i++) {
-        let liTag = `<li li-index="${i + 1}">
-                        <div class="row">
-                            <span>${allMusic[i].name}</span>
-                            <p>${allMusic[i].artist}</p>
-                        </div>
-                        <span id="${allMusic[i].src}" class="audio-duration">3:40</span>
-                        <audio class="${allMusic[i].src}" src="songs/${allMusic[i].src}.m4a"></audio>
-                    </li>`;
-        ulTag.insertAdjacentHTML("beforeend", liTag);
-
-        let liAudioDuartionTag = ulTag.querySelector(`#${allMusic[i].src}`);
-        let liAudioTag = ulTag.querySelector(`.${allMusic[i].src}`);
-        liAudioTag.addEventListener("loadeddata", () => {
-          let duration = liAudioTag.duration;
-          let totalMin = Math.floor(duration / 60);
-          let totalSec = Math.floor(duration % 60);
-          if (totalSec < 10) {
-            totalSec = `0${totalSec}`;
-          }
-          liAudioDuartionTag.innerText = `${totalMin}:${totalSec}`;
-          liAudioDuartionTag.setAttribute("t-duration", `${totalMin}:${totalSec}`);
-        });
-      }
-    })
-}
-createMusicList()
-
-// Play a particular song from the list onclick of li tag
-function playingSong() {
-  const ulTag = document.querySelector("ul");
-  const allLiTag = ulTag.querySelectorAll("li");
-
-  for (let j = 0; j < allLiTag.length; j++) {
-    let audioTag = allLiTag[j].querySelector(".audio-duration");
-
-    if (allLiTag[j].classList.contains("playing")) {
-      allLiTag[j].classList.remove("playing");
-      let adDuration = audioTag.getAttribute("t-duration");
-      audioTag.innerText = adDuration;
-    }
-
-    if (allLiTag[j].getAttribute("li-index") == musicIndex) {
-      allLiTag[j].classList.add("playing");
-      audioTag.innerText = "Playing";
-    }
-
-    allLiTag[j].setAttribute("onclick", "clicked(this)");
-  }
-}
-
-// Particular li clicked function
-function clicked(element) {
-  let getLiIndex = element.getAttribute("li-index");
-  musicIndex = getLiIndex;
-  loadMusic(musicIndex);
-  playMusic();
-  playingSong();
-}
-
+// Comment form submission event
 commentForm.addEventListener('submit', function (event) {
   event.preventDefault();
 
@@ -219,23 +122,26 @@ commentForm.addEventListener('submit', function (event) {
     // Append the new comment to the comments container
     commentsContainer.appendChild(newComment);
 
-    // Clear the form inputs
+    // Clear the form input
     commentInput.value = '';
+
+    // Add the comment to the server
     postComment(comment, musicIndex);
   }
 });
 
 // Function to delete a comment
-function deleteComment(deleteButton, musicIndex) {
+function deleteComment(deleteButton, songIndex) {
   const commentElement = deleteButton.parentNode;
   commentsContainer.removeChild(commentElement);
 
-  deleteCommentAPI(musicIndex);
+  // Delete the comment on the server
+  deleteCommentAPI(songIndex);
 }
 
 // Function to make a POST request and add a comment to the API
-function postComment(comment, musicIndex) {
-  const apiUrl = `http://localhost:3000/allSongs/${musicIndex}/comments`;
+function postComment(comment, songIndex) {
+  const apiUrl = `http://localhost:3000/allSongs/${songIndex}/comments`;
 
   fetch(apiUrl, {
     method: 'POST',
@@ -250,8 +156,8 @@ function postComment(comment, musicIndex) {
 }
 
 // Function to make a DELETE request and remove a comment from the API
-function deleteCommentAPI(musicIndex) {
-  const apiUrl = `http://localhost:3000/allSongs/${musicIndex}/comments`;
+function deleteCommentAPI(songIndex) {
+  const apiUrl = `http://localhost:3000/allSongs/${songIndex}/comments`;
 
   fetch(apiUrl, {
     method: 'DELETE',
